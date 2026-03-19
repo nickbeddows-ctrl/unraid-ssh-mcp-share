@@ -344,6 +344,34 @@ def write_file(path: str, content: str) -> str:
 
 
 @mcp.tool()
+def append_file(path: str, content: str) -> str:
+    """
+    Append content to an existing file on the Unraid host.
+
+    Use this together with write_file for chunked writes of large files:
+      1. write_file(path, chunk1)   -- creates/overwrites the file
+      2. append_file(path, chunk2)  -- appends subsequent chunks
+      3. append_file(path, chunk3)  -- and so on
+
+    Only allowed in specific directories: /mnt/user, /mnt/cache, /mnt/disk, /tmp.
+
+    Args:
+        path: Absolute file path.
+        content: Content to append.
+    """
+    try:
+        path = validate_write_path(path)
+    except GuardrailError as e:
+        return f"⚠️ Guardrail: {e}"
+
+    safe_path = shlex.quote(path)
+    delimiter = "_UNRAID_SSH_MCP_EOF_"
+    cmd = f"cat >> {safe_path} << '{delimiter}'\n{content}\n{delimiter}"
+
+    return _run(cmd)
+
+
+@mcp.tool()
 def list_directory(path: str, show_hidden: bool = False) -> str:
     """
     List contents of a directory on the Unraid host.

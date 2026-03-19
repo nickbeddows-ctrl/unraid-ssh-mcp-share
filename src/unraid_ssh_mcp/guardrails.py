@@ -208,7 +208,7 @@ def validate_write_path(path: str) -> str:
 
 # ─── Output Limits ───────────────────────────────────────────────────────────
 
-MAX_OUTPUT_BYTES = 64 * 1024  # 64 KB
+MAX_OUTPUT_BYTES = 512 * 1024  # 512 KB
 
 
 def truncate_output(text: str, label: str = "output") -> str:
